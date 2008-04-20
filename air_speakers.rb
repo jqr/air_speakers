@@ -1,5 +1,3 @@
-#!/usr/bin/ruby
-
 require 'rubygems'
 require 'raop'
 require 'open3'
@@ -9,38 +7,35 @@ Thread.abort_on_exception = true
 
 class AirSpeakers
   attr_accessor :client, :player, :reader, :watcher, :host
-  @@speakers = []
-  @@resolved_speakers = []
   
   def self.find(delay = 2)
+    speakers = []
+    resolved_speakers = []
     service = DNSSD.browse('_airport._tcp') do |reply| 
-      @@speakers << reply
+      speakers << reply
     end
     sleep delay
-    @@speakers.each do |speakers|
+    speakers.each do |speakers|
       DNSSD.resolve(speakers.name, speakers.type, speakers.domain) do |reply|
-        @@resolved_speakers << reply
+        resolved_speakers << reply
       end
     end
     sleep delay
-    @@resolved_speakers
+    resolved_speakers
   end
   
   def initialize(host)
     self.host = host
   end
   
-
   def connect
     self.client = Net::RAOP::Client.new(host)
     
-    info_flush "Connecting To AirSpeakers at #{host}... "
     begin
       client.connect
-      info "connected."
     rescue => err
-      info "could not connect: "
-      info err.inspect
+      error "Could not connect to #{host}: "
+      error err.inspect
     end
   end
 
@@ -94,5 +89,9 @@ class AirSpeakers
 
   def info(message)
     puts message
+  end
+
+  def error(message)
+    puts error
   end
 end
