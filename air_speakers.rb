@@ -8,28 +8,33 @@ require 'dnssd'
 Thread.abort_on_exception = true
 
 class AirSpeakers
-  attr_accessor :client, :player, :reader, :watcher
+  attr_accessor :client, :player, :reader, :watcher, :host
   @@speakers = []
+  @@resolved_speakers = []
   
-  def self.find
+  def self.find(delay = 2)
     service = DNSSD.browse('_airport._tcp') do |reply| 
       @@speakers << reply
     end
+    sleep delay
+    @@speakers.each do |speakers|
+      DNSSD.resolve(speakers.name, speakers.type, speakers.domain) do |reply|
+        @@resolved_speakers << reply
+      end
+    end
+    sleep delay
+    @@resolved_speakers
   end
   
-  def self.lsit
-    @@speakers
-  end
-    
-  def initialize(ip)
-    @ip = ip
+  def initialize(host)
+    self.host = host
   end
   
 
   def connect
-    self.client = Net::RAOP::Client.new(@ip)
+    self.client = Net::RAOP::Client.new(host)
     
-    info_flush "Connecting To AirSpeakers at #{@ip}... "
+    info_flush "Connecting To AirSpeakers at #{host}... "
     begin
       client.connect
       info "connected."
@@ -48,7 +53,8 @@ class AirSpeakers
   end
   
   def play_mp3(file)
-    lame_in, lame_out, lame_err = Open3.popen3("lame --decode #{file} -")
+    escaped_file = file.gsub(/ /, '\ ')
+    lame_in, lame_out, lame_err = Open3.popen3("lame -t --decode #{escaped_file} -")
     file = File.basename(file)
   
     if player

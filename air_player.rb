@@ -10,7 +10,7 @@ def show_help
   puts " p = play, n = next, s = stop, q = quit"
 end
 
-@as = AirSpeakers.new('10.0.0.148')
+
 
 @songs = Dir.glob('*.mp3')
 current_song = 0
@@ -20,6 +20,23 @@ puts "#{@songs.size} songs loaded:"
   puts "  #{song}"
 end
 
+puts "Searching for speakers..."
+speakers = AirSpeakers.find(0.5)
+host = 
+  if speakers.size > 1
+    puts "Available speakers:"
+    speakers.each_with_index do |speaker, index|
+      puts "  #{index + 1}. #{speaker.target}"
+    end
+    puts "Enter Speaker Number:"
+    number = gets.to_i
+    speakers[number - 1].target
+  else
+    puts "Using #{speakers.first.target}"
+    speakers.first.target
+  end
+
+@as = AirSpeakers.new(host)
 show_help
 
 loop do
