@@ -1,0 +1,7 @@
+Air Speakers
+============
+
+A simple interface to Airport Express speakers using Net::RAOP::Client.
+
+Homepage: http://github.com/jqr/air_speakers/tree/master  
+Copyright (c) 2008 Elijah Miller <elijah.miller@gmail.com>, released under the MIT license.
