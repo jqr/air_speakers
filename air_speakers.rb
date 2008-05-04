@@ -6,7 +6,7 @@ require 'dnssd'
 Thread.abort_on_exception = true
 
 class AirSpeakers
-  attr_accessor :client, :player, :reader, :watcher, :host
+  attr_accessor :client, :player, :host
   
   def self.find(delay = 2)
     speakers = []
