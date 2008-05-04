@@ -10,18 +10,14 @@ class AirSpeakers
   
   def self.find(delay = 2)
     speakers = []
-    resolved_speakers = []
-    service = DNSSD.browse('_airport._tcp') do |reply| 
-      speakers << reply
-    end
-    sleep delay
-    speakers.each do |speakers|
-      DNSSD.resolve(speakers.name, speakers.type, speakers.domain) do |reply|
-        resolved_speakers << reply
+    service = DNSSD.browse('_airport._tcp') do |browse_reply| 
+      browse_reply
+      DNSSD.resolve(browse_reply.name, browse_reply.type, browse_reply.domain) do |resolve_reply|
+        speakers << resolve_reply
       end
     end
     sleep delay
-    resolved_speakers
+    speakers
   end
   
   def initialize(host)
