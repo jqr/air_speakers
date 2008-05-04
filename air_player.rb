@@ -18,7 +18,10 @@ def get_speaker_host
     puts "Searching for speakers..."
     speakers = AirSpeakers.find(0.5)
  
-    if speakers.size > 1
+    if speakers.empty?
+      puts "No speakers found."
+      exit
+    elsif speakers.size > 1
       speakers.each_with_index do |speaker, index|
         puts "  #{index + 1}. #{speaker.target}"
       end
